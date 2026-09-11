@@ -1,11 +1,18 @@
 import { useState } from 'react'
+import { ConstellationEvent } from '../App'
 
-export const EventForm = ({ onAdd }) => {
+export const EventForm = ({ onAdd, skySize }: { onAdd: (event: ConstellationEvent) => void; skySize: { width: number; height: number } }) => {
   const [title, setTitle] = useState("")
   const [date, setDate] = useState("")
   const [note, setNote] = useState("")
 
-  const handleSubmit = (e) => {
+  const generateRandomPosition = () => {
+    const randomX = Math.floor(Math.random() * skySize.width)
+    const randomY = Math.floor(Math.random() * skySize.height)
+    return { x: randomX, y: randomY }
+  }
+
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!title.length || !date.length) {
       alert("Please fill in both the title and date fields.")
@@ -13,7 +20,10 @@ export const EventForm = ({ onAdd }) => {
     }
 
     const id = crypto.randomUUID()
-    onAdd({ id, title, date, note })
+
+    const position = generateRandomPosition()
+
+    onAdd({ id, title, date, note, position })
     clearForm()
   }
 
@@ -21,6 +31,17 @@ export const EventForm = ({ onAdd }) => {
     setTitle("")
     setDate("")
     setNote("")
+  }
+
+  const randomEvent = () => {
+    const id = crypto.randomUUID()
+
+    const position = generateRandomPosition()
+
+    setTitle("Random Event")
+    setDate(new Date().toISOString().split('T')[0]) // Current date in YYYY-MM-DD format
+    setNote("This is a randomly generated event.")
+    onAdd({ id, title, date, note, position })
   }
 
   return (
@@ -70,6 +91,14 @@ export const EventForm = ({ onAdd }) => {
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
           Add Event
+        </button>
+
+        <button
+          type="button"
+          onClick={randomEvent}
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2"
+        >
+          Random Event
         </button>
       </div>
     </form>
