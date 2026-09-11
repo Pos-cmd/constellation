@@ -1,7 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { ConstellationEvent } from '../App';
 
-export const Sky = ({ events, skySize }: { events: ConstellationEvent[]; skySize: { width: number; height: number } }) => {
+export const Sky = ({ events, skySize, onEventSelect }:
+  {
+    events: ConstellationEvent[];
+    skySize: { width: number; height: number };
+    onEventSelect: (event: ConstellationEvent | null) => void
+  }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const drawCircle = (ctx: CanvasRenderingContext2D, x: number, y: number, radius: number) => {
@@ -17,6 +22,28 @@ export const Sky = ({ events, skySize }: { events: ConstellationEvent[]; skySize
     ctx.lineTo(end.x, end.y)
     ctx.strokeStyle = 'white'
     ctx.stroke()
+  }
+
+  const getEventAtPosition = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+    const onClickRect = canvasRef.current?.getBoundingClientRect()
+    if (!onClickRect) return
+
+
+    const onClickX = e.clientX - onClickRect.left
+    const onClickY = e.clientY - onClickRect.top
+
+    const closestEvent = events.reduce((closest, event) => {
+      const distance = Math.hypot(onClickX - event.position.x, onClickY - event.position.y)
+
+      return distance < closest.distance ? { event, distance } : closest
+    }, { event: null as ConstellationEvent | null, distance: Infinity })
+
+
+    if (closestEvent.distance < 20 && closestEvent.event) {
+      onEventSelect(closestEvent.event)
+    } else {
+      onEventSelect(null)
+    }
   }
 
   useEffect(() => {
@@ -46,7 +73,7 @@ export const Sky = ({ events, skySize }: { events: ConstellationEvent[]; skySize
   }, [events, skySize])
 
   return (
-    <canvas ref={canvasRef} width={skySize.width} height={skySize.height} className="border border-gray-600" />
+    <canvas ref={canvasRef} width={skySize.width} height={skySize.height} className="border border-gray-600" onClick={(e) => getEventAtPosition(e)} />
   )
 }
 

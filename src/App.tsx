@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { EventDetails } from "./components/EventDetails"
 import { EventForm } from "./components/EventForm"
 import { Sky } from "./components/Sky"
 
@@ -16,6 +17,7 @@ export interface ConstellationEvent {
 
 function App() {
   const [events, setEvents] = useState<ConstellationEvent[]>([])
+  const [selectedEvent, setSelectedEvent] = useState<ConstellationEvent | null>(null)
 
   const skySize = {
     height: 300,
@@ -25,9 +27,18 @@ function App() {
   return (
 
     <div className="bg-slate-950 min-h-screen text-white">
-      <EventForm onAdd={(newEvent) => setEvents([...events, newEvent])} skySize={skySize} />
+      <div className="flex flex-col md:flex-row gap-4 justify-center items-start p-4">
+        <EventForm
+          skySize={skySize}
+          selectedEvent={selectedEvent}
+          onAdd={(newEvent) => setEvents([...events, newEvent])}
+        />
 
-      <Sky events={events} skySize={skySize} />
+        <EventDetails event={selectedEvent} />
+
+      </div>
+
+      <Sky events={events} skySize={skySize} onEventSelect={setSelectedEvent} />
 
     </div>
   )

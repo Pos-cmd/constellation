@@ -1,7 +1,13 @@
-import { useState } from 'react'
-import { ConstellationEvent } from '../App'
+import { useState } from 'react';
+import { ConstellationEvent } from '../App';
 
-export const EventForm = ({ onAdd, skySize }: { onAdd: (event: ConstellationEvent) => void; skySize: { width: number; height: number } }) => {
+export const EventForm = ({ onAdd, skySize, selectedEvent }:
+  {
+    onAdd: (event: ConstellationEvent) => void;
+    skySize: { width: number; height: number };
+    selectedEvent: ConstellationEvent | null
+  }) => {
+
   const [title, setTitle] = useState("")
   const [date, setDate] = useState("")
   const [note, setNote] = useState("")
@@ -40,74 +46,82 @@ export const EventForm = ({ onAdd, skySize }: { onAdd: (event: ConstellationEven
 
     const position = generateRandomPosition()
 
-    setTitle("Random Event")
     // Randomly generate a date within the last 10 years
     const randomDate = new Date()
     randomDate.setFullYear(randomDate.getFullYear() - Math.floor(Math.random() * 10))
-    setDate(randomDate.toISOString().split('T')[0])
-    setNote("This is a randomly generated event.")
-    onAdd({ id, title, date, note, position })
 
+    const randomTitle = "Random Event"
+    const randomDateStr = randomDate.toISOString().split('T')[0]
+    const randomNote = "This is a randomly generated event."
+
+
+    onAdd({ id, title: randomTitle, date: randomDateStr, note: randomNote, position })
+    
+    setTitle(randomTitle)
+    setDate(randomDateStr)
+    setNote(randomNote)
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-4">
-      <div className="flex flex-col gap-4 p-4">
-        <div className="flex items-center gap-2">
-          <label htmlFor="title" className="mr-2">
-            Title:
-          </label>
-          <input
-            id="title"
-            name="title"
-            type="text"
-            placeholder="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
+    <div className="bg-slate-800 rounded-lg shadow-md m-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 p-4">
+          <div className="flex items-center gap-2">
+            <label htmlFor="title" className="mr-2">
+              Title:
+            </label>
+            <input
+              id="title"
+              name="title"
+              type="text"
+              placeholder="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor="date" className="mr-2">
+              Date:
+            </label>
+            <input
+              id="date"
+              name="date"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor="note" className="mr-2">
+              Note:
+            </label>
+            <textarea
+              id="note"
+              name="note"
+              placeholder="Note"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            />
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <label htmlFor="date" className="mr-2">
-            Date:
-          </label>
-          <input
-            id="date"
-            name="date"
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <label htmlFor="note" className="mr-2">
-            Note:
-          </label>
-          <textarea
-            id="note"
-            name="note"
-            placeholder="Note"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-          />
-        </div>
-      </div>
-      <div className="flex justify-center">
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Add Event
-        </button>
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Add Event
+          </button>
 
-        <button
-          type="button"
-          onClick={randomEvent}
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2"
-        >
-          Random Event
-        </button>
-      </div>
-    </form>
+          <button
+            type="button"
+            onClick={randomEvent}
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2"
+          >
+            Random Event
+          </button>
+        </div>
+      </form>
+    </div>
   )
 }
 
