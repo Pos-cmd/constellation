@@ -1,22 +1,18 @@
 import { useState } from 'react';
 import { ConstellationEvent } from '../App';
 
-export const EventForm = ({ onAdd, skySize, selectedEvent }:
+export const EventForm = ({ onAdd, skySize, onClearEvents }:
   {
     onAdd: (event: ConstellationEvent) => void;
     skySize: { width: number; height: number };
-    selectedEvent: ConstellationEvent | null
+    onClearEvents: () => void;
   }) => {
 
   const [title, setTitle] = useState("")
   const [date, setDate] = useState("")
   const [note, setNote] = useState("")
 
-  const generateRandomPosition = () => {
-    const randomX = Math.floor(Math.random() * skySize.width)
-    const randomY = Math.floor(Math.random() * skySize.height)
-    return { x: randomX, y: randomY }
-  }
+  const generateRandomPosition = () => ({ x: Math.random(), y: Math.random()})
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -56,7 +52,7 @@ export const EventForm = ({ onAdd, skySize, selectedEvent }:
 
 
     onAdd({ id, title: randomTitle, date: randomDateStr, note: randomNote, position })
-    
+
     setTitle(randomTitle)
     setDate(randomDateStr)
     setNote(randomNote)
@@ -118,6 +114,14 @@ export const EventForm = ({ onAdd, skySize, selectedEvent }:
             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2"
           >
             Random Event
+          </button>
+
+          <button
+            type="button"
+            onClick={onClearEvents}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 ml-2"
+          >
+            Clear All Events
           </button>
         </div>
       </form>
