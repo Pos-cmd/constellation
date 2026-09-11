@@ -34,14 +34,20 @@ export const EventForm = ({ onAdd, skySize }: { onAdd: (event: ConstellationEven
   }
 
   const randomEvent = () => {
+    clearForm()
+
     const id = crypto.randomUUID()
 
     const position = generateRandomPosition()
 
     setTitle("Random Event")
-    setDate(new Date().toISOString().split('T')[0]) // Current date in YYYY-MM-DD format
+    // Randomly generate a date within the last 10 years
+    const randomDate = new Date()
+    randomDate.setFullYear(randomDate.getFullYear() - Math.floor(Math.random() * 10))
+    setDate(randomDate.toISOString().split('T')[0])
     setNote("This is a randomly generated event.")
     onAdd({ id, title, date, note, position })
+
   }
 
   return (
