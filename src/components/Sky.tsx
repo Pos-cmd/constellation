@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react'
-import { ConstellationEvent } from '../App'
+import { useEffect, useRef } from 'react';
+import { ConstellationEvent } from '../App';
 
 export const Sky = ({ events, skySize }: { events: ConstellationEvent[]; skySize: { width: number; height: number } }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -11,6 +11,14 @@ export const Sky = ({ events, skySize }: { events: ConstellationEvent[]; skySize
     ctx.fill()
   }
 
+  const drawLine = (ctx: CanvasRenderingContext2D, start: { x: number, y: number }, end: { x: number, y: number }) => {
+    ctx.beginPath()
+    ctx.moveTo(start.x, start.y)
+    ctx.lineTo(end.x, end.y)
+    ctx.strokeStyle = 'white'
+    ctx.stroke()
+  }
+
   useEffect(() => {
     const ctx = canvasRef.current?.getContext('2d')
 
@@ -20,10 +28,20 @@ export const Sky = ({ events, skySize }: { events: ConstellationEvent[]; skySize
     // Properties for the circle
     const radius = 5
 
+    const sortedEvents = [...events].sort((a, b) => a.date.localeCompare(b.date))
+
     // Draw circle
-    events.forEach((event) => {
-      drawCircle(ctx!, event.position.x, event.position.y, radius)
-    })
+    sortedEvents
+      .forEach((event, index) => {
+        // Draw the circle for the event
+        drawCircle(ctx!, event.position.x, event.position.y, radius)
+
+        // Draw line to the next event if it exists
+        if (index < sortedEvents.length - 1) {
+          const nextEvent = sortedEvents[index + 1]
+          drawLine(ctx!, event.position, nextEvent.position)
+        }
+      })
 
   }, [events, skySize])
 
